@@ -1,0 +1,162 @@
+{% extends 'store/main.html' %}
+{% load static humanize %}
+
+{% block content %}
+
+<br>
+{% if type == 'orders' %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h3>Order Details</h3>
+        <br>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Customer name:</span>
+                <span style="flex:2; display:flex; justify-content: flex-end;">
+                    <input type="text" style="flex:1" value="{{item.customer.name}}" disabled/>
+                    <a style="margin-left:10px" href="{% url 'detail' %}?type=customers&id={{item.customer.id}}"><i class="fa fa-info-circle"></i></a>
+                </span>
+            </div>
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Order status:</span>
+                <div style="flex:2">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        {% for option in item.status %}
+                            {% if option == item.order.complete %}
+                                <label class="btn btn-outline-secondary active">
+                                    <input type="radio" name="options" id="option1" value="{{option}}" checked>{{option}}
+                                </label>
+                            {% else %}
+                                <label class="btn btn-outline-secondary">
+                                    <input type="radio" name="options" id="option2" value="{{option}}">{{option}}
+                                </label>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Ordered date:</span>
+                <input type="text" style="flex:2" value="{{item.order.date_order}}" disabled/>
+            </div>
+            <div class="row" style="display: flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Address:</span>
+                <span style="flex:2;">
+                    <input name="address" type="text" value="{{item.address.address}}" placeholder="Building, floor"/>
+                    <input name="street" type="text" value="{{item.address.street}}" placeholder="Street..."/>
+                    <input name="township" type="text" value="{{item.address.township}}" placeholder="Township..."/>
+                    <input name="city" type="text" value="{{item.address.city}}" placeholder="City..."/>
+                </span>
+            </div>
+            <div class="row" style="display: flex;">
+                <input style="margin-left: auto;" class="btn btn-success" type="submit" value="Update">
+            </div>
+        </form>
+        <br>
+        <hr>
+        <div class="row">
+                <h2>Items</h2>
+            </div>
+            <div class="row" style="display:flex;">
+                <div style="flex:2"></div>
+                <div style="flex:2"><strong>Item</strong></div>
+                <div style="flex:1"><strong>Price</strong></div>
+                <div style="flex:1"><strong>Quantity</strong></div>
+                <div style="flex:1"><strong>Total</strong></div>
+            </div>
+            {% for orderitem in item.orderitems %}
+                <div class="row" style="display:flex; margin-bottom: 10px;">
+                    <div style="flex:2"><img class="row-image" src="{{orderitem.product.imageUrl}}"></div>
+                    <div style="flex:2">{{orderitem.product.name}}</div>
+                    <div style="flex:1">{{orderitem.product.price|intcomma}}MMK</div>
+                    <div style="flex:1">
+                        <p class="quantity">{{orderitem.quantity}}</p>
+                        <div class="quantity">
+                            <img data-order="{{item.order.id}}" data-product="{{orderitem.product.id}}" data-action="update_add" class="chg-quantity update-cart" src="{% static  'images/arrow-up.png' %}">
+
+                            <img data-order="{{item.order.id}}" data-product="{{orderitem.product.id}}" data-action="update_remove" class="chg-quantity update-cart" src="{% static  'images/arrow-down.png' %}">
+                        </div>
+                    </div>
+                    <div style="flex:1"><strong>{{orderitem.getTotal}}</strong></div>
+                </div>
+            {% endfor %}
+    </div>
+</div>
+{% elif type == 'customers' %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h3>Customer Details</h3>
+        <br>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Name:</span>
+                <span style="flex:2; display:flex; justify-content: flex-end;">
+                    <input name="name" type="text" style="flex:1" value="{{item.customer.name}}"/>
+                </span>
+            </div>
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Username:</span>
+                <span style="flex:2; display:flex; justify-content: flex-end;">
+                    <input name="username" type="text" style="flex:1" value="{{item.customer.user.username}}" disabled/>
+                </span>
+            </div>
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Phone:</span>
+                <span style="flex:2; display:flex; justify-content: flex-end;">
+                    <input name="phone" type="text" style="flex:1" value="{{item.customer.phone}}"/>
+                </span>
+            </div>
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Email:</span>
+                <span style="flex:2; display:flex; justify-content: flex-end;">
+                    <input name="email" type="text" style="flex:1" value="{{item.customer.email}}"/>
+                </span>
+            </div>
+            <div class="row" style="display:flex;">
+                <input type="submit" style="margin-left:auto;" class="btn btn-success" value="Update">
+            </div>
+        </form>
+    </div>
+</div>
+{% elif type == 'products' %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h3>Product Details</h3>
+        <br>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Current Image:</span>
+                <span style="flex:2; display:flex; justify-content: flex-end;">
+                    <img class="thumbnail" src="{{item.product.imageUrl}}">
+                </span>
+            </div>
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">New Image:</span>
+                <span style="flex:2; display:flex; justify-content: flex-start;">
+                    <input name="image" type="file" name="myfile">
+                </span>
+            </div>
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Name:</span>
+                <span style="flex:2; display:flex; justify-content: flex-end;">
+                    <input name="name" type="text" style="flex:1" value="{{item.product.name}}"/>
+                </span>
+            </div>
+            <div class="row" style="display:flex; margin-bottom: 10px;">
+                <span style="flex:1; align-items: right;">Price:</span>
+                <span style="flex:2; display:flex; justify-content: flex-end;">
+                    <input name="price" type="text" style="flex:1" value="{{item.product.price}}"/>
+                </span>
+            </div>
+            <div class="row" style="display:flex;">
+                <input type="submit" style="margin-left:auto;" class="btn btn-success" value="Update">
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

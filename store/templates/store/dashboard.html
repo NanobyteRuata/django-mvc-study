@@ -1,0 +1,158 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<br>
+
+<!-- Orders View -->
+{% if type == 'orders'%}
+<div class="row" style="display: flex; align-items: center;">
+    <h3>Orders</h3>
+    <a href="?type=products" style="margin: 10px;">Products</a>
+    <a href="?type=customers" style="margin: 10px;">Customers</a>
+</div>
+<div class="row">
+    <ul class="col-lg-12 list-group">
+        <li class="list-group-item" style="display: flex;">
+            <span style="flex:2;"><b>Name</b></span>
+            <span style="flex:1;"><b>Items</b></span>
+            <span style="flex:1;"><b>Status</b></span>
+            <span style="flex:2; text-align: right;"><b>Order Date</b></span>
+            <span style="flex:1;"></span>
+        </li>
+        {% for order in orders %}
+        <li class="list-group-item" style="display: flex;">
+            <span style="flex:2">{{order.customer_name}}</span>
+            <span style="flex:1">{{order.items_count}}</span>
+            <span style="flex:1">{{order.status}}</span>
+            <span style="flex:2; text-align: right;">{{order.date_order}}</span>
+            <span style="flex:1; text-align: right;"><a href="{% url 'detail' %}?type=order&id={{order.id}}" class="btn btn-info"><i class="fa fa-edit"></i></a></span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<br>
+<nav aria-label="Page navigation example">
+  <ul class="pagination" style="justify-content: center;">
+        {% if paginated_orders.has_previous %}
+            <li class="page-item"><a class="page-link" href="?orders_page={{paginated_orders.previous_page_number}}">Previous</a></li>
+        {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+        {% endif %}
+        {% for page_number in orders_paginator.page_range %}
+            {% if paginated_orders.number == page_number %}
+                <li class="page-item active"><a class="page-link" href="?orders_page={{page_number}}">{{page_number}}</a></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="?orders_page={{page_number}}">{{page_number}}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if paginated_orders.has_next %}
+            <li class="page-item"><a class="page-link" href="?orders_page={{paginated_orders.next_page_number}}">Next</a></li>
+        {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+        {% endif %}
+  </ul>
+</nav>
+<br>
+
+<!-- Customers View -->
+{% elif type == 'customers' %}
+<div class="row" style="display: flex; align-items: center;">
+    <a href="?type=orders" style="margin: 10px;">Orders</a>
+    <a href="?type=products" style="margin: 10px;">Products</a>
+    <h3>Customers</h3>
+</div>
+<div class="row">
+    <ul class="col-lg-12 list-group">
+        <li class="list-group-item" style="display: flex;">
+            <span style="flex:1;"><b>Name</b></span>
+            <span style="flex:1;"><b>Username</b></span>
+            <span style="flex:1;"><b>Email</b></span>
+            <span style="flex:1; text-align: right;"><b>Phone</b></span>
+            <span style="flex:1;"></span>
+        </li>
+        {% for customer in customers %}
+        <li class="list-group-item" style="display: flex;">
+            <span style="flex:1">{{customer.name}}</span>
+            <span style="flex:1">{{customer.user.username}}</span>
+            <span style="flex:1">{{customer.email}}</span>
+            <span style="flex:1; text-align: right;">{{customer.phone}}</span>
+            <span style="flex:1; text-align: right;"><a href="{% url 'detail' %}?type=customers&id={{customer.id}}" class="btn btn-info"><i class="fa fa-edit"></i></a></span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<br>
+<nav aria-label="Page navigation example">
+  <ul class="pagination" style="justify-content: center;">
+        {% if customers.has_previous %}
+            <li class="page-item"><a class="page-link" href="?type=customers&customers_page={{customers.previous_page_number}}">Previous</a></li>
+        {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+        {% endif %}
+        {% for page_number in customers_paginator.page_range %}
+            {% if customers.number == page_number %}
+                <li class="page-item active"><a class="page-link" href="?type=customers&customers_page={{page_number}}">{{page_number}}</a></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="?type=customers&customers_page={{page_number}}">{{page_number}}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if customers.has_next %}
+            <li class="page-item"><a class="page-link" href="?type=customers&customers_page={{customers.next_page_number}}">Next</a></li>
+        {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+        {% endif %}
+  </ul>
+</nav>
+<br>
+
+<!-- Products View -->
+{% elif type == 'products' %}
+<div class="row" style="display: flex; align-items: center;">
+    <a href="?type=orders" style="margin: 10px;">Orders</a>
+    <h3>Products</h3>
+    <a href="?type=customers" style="margin: 10px;">Customers</a>
+</div>
+<div class="row">
+    <ul class="col-lg-12 list-group">
+        <li class="list-group-item" style="display: flex;">
+            <span style="flex:2;"></span>
+            <span style="flex:2;"><b>Name</b></span>
+            <span style="flex:1; text-align: right;"><b>Price</b></span>
+            <span style="flex:1;"></span>
+        </li>
+        {% for product in products %}
+        <li class="list-group-item" style="display: flex;">
+            <span style="flex:2"><img class="row-image" src="{{product.imageUrl}}"></span>
+            <span style="flex:2">{{product.name}}</span>
+            <span style="flex:1; text-align: right;">{{product.price}}</span>
+            <span style="flex:1; text-align: right;"><a href="{% url 'detail' %}?type=products&id={{product.id}}" class="btn btn-info"><i class="fa fa-edit"></i></a></span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<br>
+<nav aria-label="Page navigation example">
+  <ul class="pagination" style="justify-content: center;">
+        {% if products.has_previous %}
+            <li class="page-item"><a class="page-link" href="?type=products&products_page={{products.previous_page_number}}">Previous</a></li>
+        {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+        {% endif %}
+        {% for page_number in products_paginator.page_range %}
+            {% if products.number == page_number %}
+                <li class="page-item active"><a class="page-link" href="?type=products&products_page={{page_number}}">{{page_number}}</a></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="?type=products&products_page={{page_number}}">{{page_number}}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if products.has_next %}
+            <li class="page-item"><a class="page-link" href="?type=products&products_page={{products.next_page_number}}">Next</a></li>
+        {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+        {% endif %}
+  </ul>
+</nav>
+
+{% endif %}
+{% endblock %}
